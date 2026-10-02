@@ -1,0 +1,13 @@
+# 提示语管理工具自动生成的本地配置
+countdown_tool_settings.json
+
+# Python
+__pycache__/
+*.py[cod]
+
+# 系统与编辑器
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/

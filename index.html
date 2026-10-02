@@ -1,0 +1,2506 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🌞 学习专注倒计时</title>
+    <style>
+        :root {
+            --primary-color: #ff8c3b;
+            --primary-hover: #f4772a;
+            --primary-light: #fff0de;
+            --danger-color: #ef4444;
+            --danger-hover: #dc2626;
+            --pause-color: #f5a623;
+            --pause-hover: #e08a00;
+            --bg-color: #fff6e6;
+            --bg-gradient: linear-gradient(160deg, #fff9ec 0%, #ffeecb 40%, #ffe4d0 70%, #fff2dd 100%);
+            --card-bg: #fffdf8;
+            --card-shadow: 0 12px 34px rgba(255, 158, 60, 0.16), 0 4px 14px rgba(255, 140, 40, 0.1);
+            --text-color: #43342a;
+            --text-secondary: #8a6f5c;
+            --text-muted: #b39476;
+            --border-color: #f5e4d0;
+            --input-bg: #fffdf8;
+            --input-border: #f0cba6;
+            --progress-bg: #f8ecd9;
+            --shimmer-color: rgba(255, 255, 255, 0.7);
+            --toggle-bg: #f8ecd9;
+            --toggle-dot: #ffffff;
+            --ripple-color: rgba(255, 150, 55, 0.35);
+            --confetti-colors: #ffb457, #ff8c3b, #ff6b6b, #ffd166, #f9a8d4, #fda4af, #ffb703, #ff7e67;
+            --card-gradient: linear-gradient(180deg, rgba(255, 170, 70, 0.07) 0%, transparent 45%);
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #ffab5e;
+            --primary-hover: #ff9240;
+            --primary-light: #3a2a18;
+            --danger-color: #f87171;
+            --danger-hover: #ef4444;
+            --pause-color: #fbbf24;
+            --pause-hover: #f59e0b;
+            --bg-color: #05060c;
+            --bg-gradient: radial-gradient(ellipse at 50% 115%, #0e1628 0%, #05060c 58%, #020309 100%);
+            --card-bg: #1a1d2e;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+            --text-color: #e5e7eb;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --border-color: #2d3148;
+            --input-bg: #23273a;
+            --input-border: #3d4260;
+            --progress-bg: #2d3148;
+            --shimmer-color: rgba(255, 255, 255, 0.08);
+            --toggle-bg: #3d4260;
+            --toggle-dot: #818cf8;
+            --ripple-color: rgba(255, 171, 94, 0.35);
+            --card-gradient: linear-gradient(180deg, rgba(255, 170, 90, 0.06) 0%, transparent 40%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        html,
+        body {
+            overscroll-behavior: none;
+        }
+
+        body {
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            background-image: var(--bg-gradient);
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            min-height: 100dvh;
+            margin: 0;
+            color: var(--text-color);
+            transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                background-image 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* —— 阳光装饰:太阳、云朵、星光 —— */
+        .sunny-decor {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        [data-theme="dark"] .sunny-decor {
+            display: none;
+        }
+
+        .sun {
+            position: absolute;
+            z-index: 0;
+            top: -95px;
+            right: -95px;
+            width: 270px;
+            height: 270px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #fff8cf 0%, #ffe08a 55%, rgba(255, 195, 100, 0) 75%);
+            box-shadow: 0 0 90px 40px rgba(255, 210, 120, 0.55);
+            animation: sun-breathe 6s ease-in-out infinite;
+        }
+
+        .sun-body {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #fff8cf 0%, #ffe08a 55%, rgba(255, 195, 100, 0) 75%);
+        }
+
+        @keyframes sun-breathe {
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.9;
+            }
+            50% {
+                transform: scale(1.08);
+                opacity: 1;
+            }
+        }
+
+        .cloud {
+            position: absolute;
+            z-index: 2;
+            font-size: 42px;
+            line-height: 1;
+            opacity: 0.5;
+            animation: cloud-drift 30s linear infinite;
+        }
+
+        .cloud-1 {
+            top: 10%;
+            left: -70px;
+            animation-duration: 30s;
+        }
+
+        .cloud-2 {
+            top: 26%;
+            left: -90px;
+            animation-duration: 38s;
+            animation-delay: -14s;
+            opacity: 0.35;
+        }
+
+        .cloud-3 {
+            top: 5%;
+            left: -110px;
+            animation-duration: 46s;
+            animation-delay: -26s;
+            opacity: 0.25;
+        }
+
+        @keyframes cloud-drift {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(calc(100vw + 170px));
+            }
+        }
+
+        .sparkle {
+            position: absolute;
+            z-index: 1;
+            font-size: 18px;
+            line-height: 1;
+            opacity: 0.55;
+            animation: sparkle-twinkle 3s ease-in-out infinite;
+        }
+
+        .sparkle-1 {
+            top: 18%;
+            right: 10%;
+            animation-delay: 0.2s;
+        }
+
+        .sparkle-2 {
+            top: 52%;
+            right: 5%;
+            font-size: 14px;
+            animation-delay: 1s;
+        }
+
+        .sparkle-3 {
+            top: 7%;
+            right: 28%;
+            font-size: 16px;
+            animation-delay: 1.6s;
+        }
+
+        @keyframes sparkle-twinkle {
+            0%,
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 0.5;
+            }
+            50% {
+                transform: scale(1.3) rotate(20deg);
+                opacity: 0.9;
+            }
+        }
+
+        /* —— 夜晚装饰:月亮、星空、流星 —— */
+        .night-decor {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+            display: none;
+        }
+
+        [data-theme="dark"] .night-decor {
+            display: block;
+        }
+
+        .moon {
+            position: absolute;
+            top: 44px;
+            right: 64px;
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 38% 35%, #fffdf0 0%, #f6eecd 55%, #e8dcb0 100%);
+            box-shadow: 0 0 24px 6px rgba(253, 246, 216, 0.22),
+                0 0 70px 24px rgba(253, 246, 216, 0.16);
+            animation: moon-glow 7s ease-in-out infinite;
+        }
+
+        .moon-body {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle at 38% 35%, #fffdf0 0%, #f6eecd 55%, #e8dcb0 100%);
+        }
+
+        .moon-body::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at 30% 42%, rgba(160, 140, 90, 0.4) 0 7px, transparent 8px),
+                radial-gradient(circle at 64% 32%, rgba(160, 140, 90, 0.3) 0 4px, transparent 5px),
+                radial-gradient(circle at 56% 68%, rgba(160, 140, 90, 0.32) 0 6px, transparent 7px),
+                radial-gradient(circle at 42% 62%, rgba(160, 140, 90, 0.22) 0 3px, transparent 4px);
+        }
+
+        @keyframes moon-glow {
+            0%,
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 24px 6px rgba(253, 246, 216, 0.2), 0 0 70px 24px rgba(253, 246, 216, 0.14);
+            }
+            50% {
+                transform: scale(1.03);
+                box-shadow: 0 0 30px 8px rgba(253, 246, 216, 0.3), 0 0 90px 30px rgba(253, 246, 216, 0.2);
+            }
+        }
+
+        .stars {
+            position: absolute;
+            inset: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 6px 1px rgba(255, 255, 255, 0.35);
+            animation: star-twinkle 3s ease-in-out infinite;
+        }
+
+        @keyframes star-twinkle {
+            0%,
+            40% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+            46% {
+                opacity: 0.15;
+                transform: scale(0.72);
+            }
+            52% {
+                opacity: 1;
+                transform: scale(1.22);
+            }
+            72% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+            80% {
+                opacity: 0.2;
+                transform: scale(0.82);
+            }
+            88%,
+            100% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        .shooting-star {
+            position: absolute;
+            --meteor-len: 150px;
+            --angle: -45deg;
+            --travel-x: -150vw;
+            --travel-y: 150vw;
+            width: var(--meteor-len);
+            height: 2px;
+            border-radius: 999px;
+            background: linear-gradient(to right,
+                    #ffffff 0%,
+                    rgba(255, 255, 255, 0.85) 8%,
+                    rgba(210, 230, 255, 0.4) 45%,
+                    rgba(255, 255, 255, 0) 100%);
+            opacity: 0;
+            transform: rotate(var(--angle));
+            filter: drop-shadow(0 0 4px rgba(180, 220, 255, 0.7));
+        }
+
+        .shooting-star::before {
+            content: '';
+            position: absolute;
+            left: -2px;
+            top: 50%;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #ffffff;
+            transform: translateY(-50%);
+            box-shadow:
+                0 0 6px 2px rgba(255, 255, 255, 0.95),
+                0 0 14px 5px rgba(255, 220, 160, 0.55),
+                0 0 28px 8px rgba(255, 170, 90, 0.3);
+            animation: head-flicker 0.18s steps(2, end) infinite;
+        }
+
+        @keyframes head-flicker {
+            0% {
+                box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.95), 0 0 14px 5px rgba(255, 220, 160, 0.55), 0 0 28px 8px rgba(255, 170, 90, 0.3);
+            }
+            100% {
+                box-shadow: 0 0 8px 2px rgba(255, 255, 255, 1), 0 0 18px 6px rgba(255, 205, 140, 0.7), 0 0 34px 10px rgba(255, 160, 80, 0.4);
+            }
+        }
+
+        .shooting-star-1 {
+            top: 6%;
+            left: 64%;
+            animation: shoot 5s linear infinite;
+        }
+
+        .shooting-star-2 {
+            top: 15%;
+            left: 42%;
+            animation: shoot 8s linear infinite;
+            animation-delay: 3.5s;
+        }
+
+        .shooting-star-3 {
+            top: 22%;
+            left: 72%;
+            animation: shoot 11s linear infinite;
+            animation-delay: 6s;
+        }
+
+        @keyframes shoot {
+            0% {
+                opacity: 0;
+                transform: translate(0, 0) rotate(var(--angle));
+            }
+            5% {
+                opacity: 1;
+                transform: translate(calc(var(--travel-x) * 0.05), calc(var(--travel-y) * 0.05)) rotate(var(--angle));
+            }
+            90% {
+                opacity: 1;
+                transform: translate(calc(var(--travel-x) * 0.9), calc(var(--travel-y) * 0.9)) rotate(var(--angle));
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--travel-x), var(--travel-y)) rotate(var(--angle));
+            }
+        }
+
+        /* —— 背景装饰点击 Q 弹动画 —— */
+        .cloud-emoji {
+            display: inline-block;
+        }
+
+        .decor-clickable {
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        body.is-counting .decor-clickable {
+            cursor: default;
+        }
+
+        .decor-clickable.decor-boing {
+            animation: decor-boing 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes decor-boing {
+            0% {
+                transform: scale(1, 1);
+            }
+            25% {
+                transform: scale(1.18, 0.82);
+            }
+            45% {
+                transform: scale(0.9, 1.14);
+            }
+            60% {
+                transform: scale(1.06, 0.94);
+            }
+            75% {
+                transform: scale(0.98, 1.03);
+            }
+            100% {
+                transform: scale(1, 1);
+            }
+        }
+
+        .container {
+            background: var(--card-bg);
+            background-image: var(--card-gradient);
+            padding: 2.2rem 2.5rem 2rem;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            width: 100%;
+            max-width: 460px;
+            position: relative;
+            transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .container:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow), 0 20px 40px rgba(0, 0, 0, 0.06);
+        }
+
+        [data-theme="dark"] .container:hover {
+            box-shadow: var(--card-shadow), 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        h1 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin: 0;
+            letter-spacing: -0.01em;
+            transition: color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+        }
+
+        .theme-toggle-wrapper {
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .theme-toggle-btn {
+            background: var(--toggle-bg);
+            border: 2px solid transparent;
+            width: 48px;
+            height: 28px;
+            border-radius: 28px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-toggle-btn:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+            transform: scale(1.04);
+        }
+
+        .theme-toggle-btn:active {
+            transform: scale(0.94);
+            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .theme-toggle-dot {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--toggle-dot);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            line-height: 1;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        }
+
+        [data-theme="dark"] .theme-toggle-dot {
+            left: 23px;
+            background: #fbbf24;
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+        }
+
+        .theme-toggle-dot .icon-sun,
+        .theme-toggle-dot .icon-moon {
+            transition: opacity 0.3s, transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: absolute;
+        }
+
+        .icon-sun {
+            opacity: 1;
+            transform: rotate(0deg) scale(1);
+        }
+
+        .icon-moon {
+            opacity: 0;
+            transform: rotate(-90deg) scale(0.5);
+        }
+
+        [data-theme="dark"] .icon-sun {
+            opacity: 0;
+            transform: rotate(90deg) scale(0.5);
+        }
+
+        [data-theme="dark"] .icon-moon {
+            opacity: 1;
+            transform: rotate(0deg) scale(1);
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        /* —— 苹果风格铃声开关（iOS Switch） —— */
+        .ring-toggle-btn {
+            width: 52px;
+            height: 32px;
+            border-radius: 32px;
+            background: #e9e9ea;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            position: relative;
+            transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+            flex-shrink: 0;
+            box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.06);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .ring-toggle-btn .ring-toggle-thumb {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            line-height: 1;
+            will-change: transform;
+        }
+
+        .ring-toggle-btn .ring-toggle-thumb::after {
+            content: '🔕';
+            font-size: 12px;
+            filter: grayscale(1);
+            opacity: 0.8;
+        }
+
+        .ring-toggle-btn.on {
+            background: #34c759;
+            box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.04);
+        }
+
+        .ring-toggle-btn.on .ring-toggle-thumb {
+            transform: translateX(20px);
+        }
+
+        .ring-toggle-btn.on .ring-toggle-thumb::after {
+            content: '🔔';
+            font-size: 12px;
+            filter: none;
+            opacity: 1;
+        }
+
+        .ring-toggle-btn:hover {
+            filter: brightness(1.04);
+        }
+
+        .ring-toggle-btn:active .ring-toggle-thumb {
+            transform: translateX(20px) scale(0.92);
+        }
+
+        .ring-toggle-btn:not(.on):active .ring-toggle-thumb {
+            transform: translateX(0) scale(0.92);
+        }
+
+        [data-theme="dark"] .ring-toggle-btn {
+            background: #3a3a3c;
+        }
+
+        [data-theme="dark"] .ring-toggle-btn.on {
+            background: #30d158;
+        }
+
+        .input-group {
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-color);
+            transition: color 0.5s;
+        }
+
+        .input-group span {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: color 0.5s;
+        }
+
+        input[type="number"] {
+            padding: 10px 8px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            border: 2px solid var(--input-border);
+            border-radius: 10px;
+            width: 58px;
+            text-align: center;
+            outline: none;
+            background: var(--input-bg);
+            color: var(--text-color);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-variant-numeric: tabular-nums;
+            -moz-appearance: textfield;
+        }
+
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            opacity: 1;
+            height: 28px;
+        }
+
+        input[type="number"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px var(--primary-light);
+            transform: translateY(-1px);
+        }
+
+        input[type="number"]:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            background: var(--progress-bg);
+            border-color: var(--border-color);
+        }
+
+        button {
+            position: relative;
+            overflow: hidden;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            outline: none;
+        }
+
+        button#start-btn {
+            background-image: linear-gradient(135deg, #ffb457 0%, #ff8c3b 55%, #ff6b6b 130%);
+            color: white;
+            padding: 10px 22px;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 8px rgba(255, 140, 59, 0.35);
+        }
+
+        button#start-btn:hover {
+            background-image: linear-gradient(135deg, #ffab4d 0%, #f4772a 55%, #ff5f5f 130%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 120, 40, 0.45);
+        }
+
+        button#start-btn:active {
+            transform: scale(0.94);
+            box-shadow: 0 1px 4px rgba(255, 140, 59, 0.35);
+            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        button#start-btn.btn-running {
+            background-color: var(--danger-color);
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+            animation: pulse-danger 2s ease-in-out infinite;
+        }
+
+        button#start-btn.btn-running:hover {
+            background-color: var(--danger-hover);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+            animation: none;
+        }
+
+        button#start-btn.btn-running:active {
+            box-shadow: 0 1px 4px rgba(239, 68, 68, 0.3);
+        }
+
+        @keyframes pulse-danger {
+            0%,
+            100% {
+                box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+            }
+            50% {
+                box-shadow: 0 4px 18px rgba(239, 68, 68, 0.55);
+            }
+        }
+
+        button#pause-btn {
+            background-color: var(--pause-color);
+            color: #0f172a;
+            padding: 10px 18px;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+            display: none;
+        }
+
+        button#pause-btn:hover {
+            background-color: var(--pause-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.45);
+        }
+
+        button#pause-btn:active {
+            transform: scale(0.94);
+            box-shadow: 0 1px 4px rgba(245, 158, 11, 0.3);
+            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        button#pause-btn.btn-paused {
+            background-color: #10b981;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        button#pause-btn.btn-paused:hover {
+            background-color: #059669;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+        }
+
+        [data-theme="dark"] button#start-btn {
+            background-image: linear-gradient(135deg, #8f5a24 0%, #6e4218 55%, #5f3131 130%);
+            color: #ffdfb0;
+            box-shadow: 0 2px 8px rgba(255, 171, 94, 0.16);
+        }
+
+        [data-theme="dark"] button#start-btn:hover {
+            background-image: linear-gradient(135deg, #a0682c 0%, #7d4d20 55%, #6e3939 130%);
+            box-shadow: 0 6px 20px rgba(255, 171, 94, 0.24);
+        }
+
+        [data-theme="dark"] button#start-btn:active {
+            box-shadow: 0 1px 4px rgba(255, 171, 94, 0.2);
+        }
+
+        [data-theme="dark"] button#start-btn.btn-running {
+            background-image: none;
+            background-color: #b0403d;
+            color: #ffe3e3;
+            box-shadow: 0 2px 8px rgba(248, 113, 113, 0.2);
+        }
+
+        [data-theme="dark"] button#start-btn.btn-running:hover {
+            background-color: #c94f4c;
+            box-shadow: 0 6px 20px rgba(248, 113, 113, 0.28);
+        }
+
+        [data-theme="dark"] button#pause-btn {
+            background-color: #4d4123;
+            color: #ffdfb0;
+            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.14);
+        }
+
+        [data-theme="dark"] button#pause-btn:hover {
+            background-color: #5d4f2b;
+            box-shadow: 0 6px 20px rgba(251, 191, 36, 0.2);
+        }
+
+        [data-theme="dark"] button#pause-btn.btn-paused {
+            background-color: #155e48;
+            color: #b7f5d8;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.16);
+        }
+
+        [data-theme="dark"] button#pause-btn.btn-paused:hover {
+            background-color: #1b7358;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.24);
+        }
+
+        [data-theme="dark"] #progress-bar {
+            background: linear-gradient(90deg, #7a5a24, #d98a3d, #b04848, #d98a3d);
+            background-size: 200% 100%;
+        }
+
+        .ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--ripple-color);
+            transform: scale(0);
+            animation: ripple-anim 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-anim {
+            to {
+                transform: scale(3.5);
+                opacity: 0;
+            }
+        }
+
+        #timer-display {
+            font-size: 4rem;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            margin: 0.8rem 0 0.6rem;
+            color: var(--text-color);
+            letter-spacing: 2px;
+            transition: color 0.5s, transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            line-height: 1.1;
+        }
+
+        #timer-display.pulse-digit {
+            animation: digit-pulse 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes digit-pulse {
+            0% {
+                transform: scale(1);
+            }
+            30% {
+                transform: scale(1.06);
+            }
+            60% {
+                transform: scale(0.97);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .progress-wrapper {
+            width: 100%;
+            background-color: var(--progress-bg);
+            height: 10px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 1.2rem;
+            position: relative;
+            transition: background-color 0.5s;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ffc85c, var(--primary-color), #ff6b6b, var(--primary-color));
+            background-size: 200% 100%;
+            width: 0%;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            animation: shimmer 2.5s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        #progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 65%;
+            background: linear-gradient(90deg,
+                    transparent 0%,
+                    var(--shimmer-color) 30%,
+                    var(--shimmer-color) 55%,
+                    transparent 100%);
+            animation: shimmer-sweep 2.4s ease-in-out infinite;
+            border-radius: 10px;
+            will-change: transform, opacity;
+        }
+
+        @keyframes shimmer-sweep {
+            0% {
+                transform: translateX(-120%);
+                opacity: 0;
+            }
+            14% {
+                opacity: 0.9;
+            }
+            66% {
+                opacity: 0.9;
+            }
+            100% {
+                transform: translateX(120%);
+                opacity: 0;
+            }
+        }
+
+        #message {
+            min-height: 26px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            line-height: 1.5;
+            padding: 0 8px;
+        }
+
+        #message.fade-change {
+            animation: msg-fade 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes msg-fade {
+            0% {
+                opacity: 0.3;
+                transform: translateY(6px);
+            }
+            50% {
+                opacity: 0.7;
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #message.celebrate {
+            animation: celebrate-bounce 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 1.15rem;
+        }
+
+        @keyframes celebrate-bounce {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            40% {
+                transform: scale(1.08);
+                opacity: 1;
+            }
+            65% {
+                transform: scale(0.94);
+            }
+            85% {
+                transform: scale(1.03);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+            pointer-events: none;
+            z-index: 100;
+            animation: confetti-fly 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes confetti-fly {
+            0% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+                opacity: 1;
+            }
+            60% {
+                opacity: 0.9;
+            }
+            100% {
+                transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            padding: 20px;
+            animation: modal-fade-in 0.18s ease-out;
+        }
+
+        .modal-overlay.closing {
+            animation: modal-fade-out 0.15s ease-in forwards;
+        }
+
+        @keyframes modal-fade-in {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes modal-fade-out {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        .modal-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: var(--card-shadow), 0 24px 60px rgba(0, 0, 0, 0.25);
+            padding: 24px 22px 20px;
+            max-width: 330px;
+            width: 100%;
+            text-align: center;
+            animation: modal-pop 0.22s cubic-bezier(0.34, 1.4, 0.64, 1);
+            transform-origin: center;
+        }
+
+        @keyframes modal-pop {
+            from {
+                transform: scale(0.86);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .modal-message {
+            font-size: 0.95rem;
+            line-height: 1.55;
+            color: var(--text-secondary);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+
+        .modal-btn {
+            border: none;
+            border-radius: 10px;
+            padding: 10px 18px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: #fff;
+            transition: transform 0.15s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-1px);
+        }
+        .modal-btn:active {
+            transform: scale(0.95);
+        }
+        .modal-btn:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .modal-btn-primary {
+            background: var(--primary-color);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(255, 140, 59, 0.3);
+        }
+        .modal-btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .modal-btn-danger {
+            background: var(--danger-color);
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.28);
+        }
+        .modal-btn-danger:hover {
+            background: var(--danger-hover);
+        }
+
+        [data-theme="dark"] .modal-btn-primary {
+            background: #9c5b24;
+            box-shadow: 0 2px 8px rgba(255, 171, 94, 0.18);
+        }
+        [data-theme="dark"] .modal-btn-primary:hover {
+            background: #b06a2b;
+        }
+
+        [data-theme="dark"] .modal-btn-danger {
+            background: #a83a38;
+            box-shadow: 0 2px 8px rgba(248, 113, 113, 0.2);
+        }
+        [data-theme="dark"] .modal-btn-danger:hover {
+            background: #bf4643;
+        }
+
+        /* —— 白天模式彩虹特效：每满一分钟划出一道彩虹 —— */
+        .rainbow-decor {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .rainbow-decor.visible {
+            opacity: 1;
+        }
+
+        .rainbow-arc {
+            --rainbow-r: 500px;
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            background:
+                radial-gradient(circle var(--rainbow-r) at 50% 50%,
+                        transparent 0% 41.8%,
+                        #B49BFF 42% 44.3%,
+                        #6FB7FF 44.5% 46.8%,
+                        #7ED998 47% 49.3%,
+                        #FFCE6E 49.5% 51.8%,
+                        #FFA36B 52% 54.3%,
+                        #FF7B8A 54.5% 56.8%,
+                        transparent 57.2% 100%),
+                radial-gradient(circle var(--rainbow-r) at 50% 50%,
+                        rgba(255, 250, 240, 0.18) 0%,
+                        rgba(255, 250, 240, 0.07) 52%,
+                        rgba(255, 250, 240, 0) 68%);
+            clip-path: inset(0 100% 0 0);
+            opacity: 0.94;
+            z-index: 1;
+            will-change: transform, clip-path;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: max(10px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+                align-items: flex-start;
+                justify-content: center;
+            }
+            .container {
+                padding: 1.6rem 1.2rem 1.4rem;
+                border-radius: 16px;
+                max-width: 94vw;
+                width: auto;
+                min-width: 0;
+                margin: 0 10px;
+            }
+            h1 {
+                font-size: 1.15rem;
+            }
+            #timer-display {
+                font-size: 3.2rem;
+                letter-spacing: 1px;
+                word-break: break-all;
+            }
+            .input-group {
+                gap: 5px;
+            }
+            .input-group label {
+                font-size: 0.85rem;
+            }
+            button#start-btn,
+            button#pause-btn {
+                padding: 9px 16px;
+                font-size: 0.88rem;
+                border-radius: 8px;
+            }
+            input[type="number"] {
+                width: 48px;
+                padding: 8px 4px;
+                font-size: 0.95rem;
+            }
+            .theme-toggle-btn {
+                width: 42px;
+                height: 24px;
+            }
+            .theme-toggle-dot {
+                width: 17px;
+                height: 17px;
+                top: 2px;
+                left: 2px;
+                font-size: 9px;
+            }
+            [data-theme="dark"] .theme-toggle-dot {
+                left: 20px;
+            }
+            .ring-toggle-btn {
+                width: 46px;
+                height: 28px;
+                border-radius: 28px;
+            }
+            .ring-toggle-btn .ring-toggle-thumb {
+                width: 24px;
+                height: 24px;
+            }
+            .ring-toggle-btn.on .ring-toggle-thumb {
+                transform: translateX(18px);
+            }
+        }
+
+        @media (max-width: 380px) {
+            .container {
+                padding: 1.3rem 0.9rem 1.1rem;
+                margin: 0 8px;
+            }
+            button#start-btn,
+            button#pause-btn {
+                flex: 1 1 40%;
+                min-width: 74px;
+            }
+        }
+
+        @media (max-height: 640px) {
+            .container {
+                padding-top: 1.2rem;
+                padding-bottom: 1rem;
+            }
+            .header-row {
+                margin-bottom: 0.8rem;
+            }
+            .input-group {
+                margin-bottom: 0.7rem;
+            }
+            #timer-display {
+                margin: 0.4rem 0;
+                font-size: 3rem;
+            }
+            .progress-wrapper {
+                margin-bottom: 0.6rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .container {
+                padding: 1.2rem 0.8rem 1rem;
+            }
+            h1 {
+                font-size: 1rem;
+            }
+            #timer-display {
+                font-size: 2.6rem;
+            }
+            .input-group {
+                gap: 3px;
+            }
+            .input-group label {
+                font-size: 0.78rem;
+            }
+            button#start-btn,
+            button#pause-btn {
+                padding: 7px 12px;
+                font-size: 0.8rem;
+                border-radius: 7px;
+            }
+            input[type="number"] {
+                width: 40px;
+                padding: 6px 2px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sunny-decor" aria-hidden="true">
+        <div class="sun"><div class="sun-body decor-clickable"></div></div>
+        <div class="cloud cloud-1"><span class="cloud-emoji decor-clickable">☁️</span></div>
+        <div class="cloud cloud-2"><span class="cloud-emoji decor-clickable">☁️</span></div>
+        <div class="cloud cloud-3"><span class="cloud-emoji decor-clickable">☁️</span></div>
+        <span class="sparkle sparkle-1">✨</span>
+        <span class="sparkle sparkle-2">✨</span>
+        <span class="sparkle sparkle-3">✨</span>
+
+        <div class="rainbow-decor" id="rainbow-decor" aria-hidden="true">
+            <div class="rainbow-arc" id="rainbow-arc"></div>
+        </div>
+    </div>
+
+    <div class="night-decor" aria-hidden="true">
+        <div class="moon"><div class="moon-body decor-clickable"></div></div>
+        <div class="stars" id="stars"></div>
+        <div class="shooting-star shooting-star-1"></div>
+        <div class="shooting-star shooting-star-2"></div>
+        <div class="shooting-star shooting-star-3"></div>
+    </div>
+
+    <div class="container" id="container">
+        <div class="header-row">
+            <h1>📚 专注学习计时器</h1>
+            <div class="header-controls">
+                <button class="ring-toggle-btn on" id="ring-toggle" role="switch" aria-checked="true"
+                    aria-label="开关铃声" title="开关铃声">
+                    <span class="ring-toggle-thumb"></span>
+                </button>
+                <div class="theme-toggle-wrapper">
+                    <button class="theme-toggle-btn" id="theme-toggle" aria-label="切换暗夜模式" title="切换暗夜/亮色模式">
+                        <span class="theme-toggle-dot">
+                            <span class="icon-sun">☀️</span>
+                            <span class="icon-moon">🌙</span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="minutes">我要专注</label>
+            <input type="number" id="minutes" value="25" min="1" max="180">
+            <span>分钟</span>
+            <button id="start-btn" onclick="startTimer()">开始</button>
+            <button id="pause-btn" onclick="togglePause()">暂停</button>
+        </div>
+
+        <div id="timer-display">00:00</div>
+
+        <div class="progress-wrapper">
+            <div id="progress-bar"></div>
+        </div>
+
+        <div id="message">🌞 元气满满的一天，准备好开始了吗？</div>
+    </div>
+
+    <script>
+        (function() {
+            // DOM 元素
+            const container = document.getElementById('container');
+            const startBtn = document.getElementById('start-btn');
+            const pauseBtn = document.getElementById('pause-btn');
+            const minutesInput = document.getElementById('minutes');
+            const timerDisplay = document.getElementById('timer-display');
+            const progressBar = document.getElementById('progress-bar');
+            const messageEl = document.getElementById('message');
+            const themeToggle = document.getElementById('theme-toggle');
+            const ringToggle = document.getElementById('ring-toggle');
+            const html = document.documentElement;
+            const rainbowDecor = document.getElementById('rainbow-decor');
+            const rainbowArc = document.getElementById('rainbow-arc');
+
+            // 状态变量
+            let timerInterval = null;
+            let completionTimeout = null;    // 精确到点完成（setTimeout 到 endTime）
+            let tickRaf = 0;                 // 前台逐帧显示对账（rAF）
+            let totalSeconds = 0;
+            let endTime = 0;
+            let isRunning = false;
+            let isPaused = false;
+            let remainingMsOnPause = 0;
+            let lastElapsedMinute = -1;
+            let usedQuoteIndices = [];
+            let quoteChangeTimeout = null;
+            let lastDisplayedSeconds = -1;
+            let rainbowActive = false;
+
+            // —— 铃声（浏览器 Web Audio API 合成，兼容 Edge / 鸿蒙6 / 所有 Chromium 浏览器）——
+            let ringEnabled = true;
+            let ringAudioCtx = null;
+            let ringPendingOnVisible = false;
+            let ringKeepAlive = null;            // 后台响铃用的静音保活循环（AudioBufferSourceNode）
+
+            try { ringEnabled = localStorage.getItem('focus-timer-ring') !== 'off'; } catch (e) {}
+
+            // 初始化 / 恢复音频上下文（必须在用户手势内调用，浏览器自动播放策略）
+            function ensureRingAudio() {
+                if (!ringAudioCtx) {
+                    const Ctor = window.AudioContext || window.webkitAudioContext;
+                    if (!Ctor) return null;
+                    ringAudioCtx = new Ctor();
+                }
+                if (ringAudioCtx.state === 'suspended') {
+                    try { ringAudioCtx.resume(); } catch (e) {}
+                }
+                return ringAudioCtx;
+            }
+
+            // 在页面可见时恢复被浏览器挂起的音频上下文（后台标签页回到前台）
+            function resumeRingAudioIfNeeded() {
+                if (ringEnabled && ringAudioCtx && ringAudioCtx.state === 'suspended') {
+                    try { ringAudioCtx.resume(); } catch (e) {}
+                }
+            }
+
+            // 播放一个音符（正弦波，带音量包络）
+            function ringNote(ctx, freq, startSec, durSec, vol) {
+                if (!ctx) return;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                const t0 = ctx.currentTime + startSec;
+                gain.gain.setValueAtTime(0.0001, t0);
+                gain.gain.exponentialRampToValueAtTime(vol, t0 + 0.03);
+                gain.gain.exponentialRampToValueAtTime(0.0001, t0 + durSec);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(t0);
+                osc.stop(t0 + durSec + 0.05);
+            }
+
+            // 实际播放铃声序列（较长旋律：C 大调上行琶音 C5-E5-G5-C6，重复 3 轮 + 长尾音，总长约 6 秒）
+            function playRingtoneSeq(ctx) {
+                const melody = [
+                    { f: 523.25, d: 0.30, v: 0.30 },  // C5
+                    { f: 659.25, d: 0.30, v: 0.30 },  // E5
+                    { f: 783.99, d: 0.30, v: 0.30 },  // G5
+                    { f: 1046.50, d: 0.55, v: 0.32 }  // C6
+                ];
+                // 每轮间隔 1.6s，共 3 轮
+                for (let round = 0; round < 3; round++) {
+                    const offset = round * 1.6;
+                    melody.forEach(n => ringNote(ctx, n.f, offset, n.d, n.v));
+                }
+                // 第三轮结束后再加一个清脆长尾音 C6（带泛音更明亮）
+                setTimeout(() => {
+                    if (!ringEnabled || !ctx || ctx.state !== 'running') return;
+                    ringNote(ctx, 1046.50, 0, 1.1, 0.30);      // C6 长音
+                    ringNote(ctx, 1567.98, 0, 0.9, 0.10);      // 泛音 G6 叠加
+                }, 5000);
+            }
+
+            // 苹果风格铃声：C 大调上行琶音重复 3 轮 + 长尾音（总长约 6 秒，到点提醒）
+            // 处理浏览器自动播放策略：若 AudioContext 被挂起，尝试恢复后播放；
+            // 若仍无法播放（页面在后台），标记为回到前台时补播
+            function playRingtone() {
+                if (!ringEnabled) return;
+                // 页面在后台时浏览器会压制音频（即使 ctx 报 running 也可能无声），
+                // 一律推迟到回到前台补播，避免铃声静默丢失
+                if (document.hidden) {
+                    ringPendingOnVisible = true;
+                    return;
+                }
+                const ctx = ensureRingAudio();
+                if (!ctx) return;
+                if (ctx.state === 'running') {
+                    playRingtoneSeq(ctx);
+                } else {
+                    // ctx 仍处于 suspended，尝试异步恢复后播放
+                    ctx.resume().then(() => {
+                        if (!ringEnabled) return;
+                        if (ctx.state === 'running') {
+                            playRingtoneSeq(ctx);
+                        } else {
+                            // 仍被浏览器阻止（通常因页面在后台），等回到前台补播
+                            ringPendingOnVisible = true;
+                        }
+                    }).catch(() => { ringPendingOnVisible = true; });
+                }
+            }
+
+            // 开关预览短音：点击铃声开关时只响一声短提示（E5，约 0.18s），便于确认开关生效
+            function playRingPreview() {
+                const ctx = ensureRingAudio();
+                if (!ctx) return;
+                if (ctx.state === 'running') {
+                    ringNote(ctx, 659.25, 0, 0.18, 0.22);
+                } else {
+                    ctx.resume().then(() => {
+                        if (ctx.state === 'running') ringNote(ctx, 659.25, 0, 0.18, 0.22);
+                    }).catch(() => {});
+                }
+            }
+
+            // —— 后台响铃保活：倒计时运行期间用一段静音循环保持 AudioContext 不挂起 ——
+            // Chrome/Edge 允许后台标签页持续播放音频时，到点铃声可在后台直接响起；
+            // 不支持的浏览器会静默降级，仍由「回到前台补播」兜底。
+            function startRingKeepAlive() {
+                if (!ringEnabled || !ringAudioCtx || ringKeepAlive) return;
+                try {
+                    const ctx = ringAudioCtx;
+                    const buffer = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate); // 1 秒静音
+                    const src = ctx.createBufferSource();
+                    src.buffer = buffer;
+                    src.loop = true;
+                    const gain = ctx.createGain();
+                    gain.gain.value = 0.0001;   // 几乎无声
+                    src.connect(gain);
+                    gain.connect(ctx.destination);
+                    src.start();
+                    ringKeepAlive = src;
+                } catch (e) {
+                    ringKeepAlive = null;
+                }
+            }
+
+            function stopRingKeepAlive() {
+                if (!ringKeepAlive) return;
+                try { ringKeepAlive.stop(); } catch (e) {}
+                try { ringKeepAlive.disconnect(); } catch (e) {}
+                ringKeepAlive = null;
+            }
+
+            // 鼓励语库（共110条）
+            const quotes = [
+                "行动是理想最高贵的表达。",
+                "千里之行，始于足下。",
+                "不要等待机会，而要创造机会。",
+                "种一棵树最好的时间是十年前，其次是现在。",
+                "开始，就是成功的一半。",
+                "想，都是问题；做，才有答案。",
+                "每一个伟大的成就都始于一个勇敢的开始。",
+                "拖延是时间的窃贼，行动是梦想的翅膀。",
+                "不迈出第一步，永远到不了终点。",
+                "此刻的专注，是未来的基石。",
+                "星光不问赶路人，时光不负有心人。",
+                "坚持，是世界上最伟大的品质。",
+                "把每一天都当成最后一天来过。",
+                "成功来自于克服困难的斗争。",
+                "滴水穿石，非一日之功。",
+                "最慢的步伐不是跬步，而是徘徊。",
+                "自律给我自由。",
+                "再长的路，一步步也能走完。",
+                "天赋决定上限，努力决定下限。",
+                "今天的努力，明天的实力。",
+                "所谓天赋，不过是热爱到极致。",
+                "努力不一定成功，但放弃一定失败。",
+                "只有拼出来的精彩，没有等出来的辉煌。",
+                "汗水浇灌的花朵最鲜艳。",
+                "每一个不曾起舞的日子，都是对生命的辜负。",
+                "学无止境，勇攀高峰。",
+                "知识改变命运，学习成就未来。",
+                "学而不思则罔，思而不学则殆。",
+                "知之者不如好之者，好之者不如乐之者。",
+                "学习是灯，努力是油，要想灯亮，必须加油。",
+                "每天进步一点点，终将成就非凡。",
+                "腹有诗书气自华。",
+                "学习永远不晚。",
+                "思维决定高度，学习拓宽视野。",
+                "昨日不可追，明日犹可期。",
+                "你若盛开，蝴蝶自来。",
+                "生活的意义在于创造，而非等待。",
+                "每一个不曾思考的日子，都是对生命的浪费。",
+                "真正的自由来自自律。",
+                "优秀是一种习惯。",
+                "活在当下，专注此刻。",
+                "加油！你离目标又近了一步！",
+                "此刻的辛苦，是未来的礼物。",
+                "撑住，光明就在不远处。",
+                "你的潜力超乎你的想象。",
+                "没有什么能够阻挡你前进的步伐。",
+                "一步一个脚印，稳稳地走向成功。",
+                "专注的你，闪闪发光。",
+                "跌倒了不可怕，可怕的是不敢再站起来。",
+                "黑夜再长，也总会天亮。",
+                "失败不是终点，而是重新出发的起点。",
+                "此刻的低谷，正是为了下一座山峰蓄力。",
+                "最难的时候，恰恰是你离成长最近的时候。",
+                "别放弃，你比自己想象的更坚强。",
+                "最难熬的日子，也终会成为过往。",
+                "人生没有白走的路，每一步都算数。",
+                "你不必完美，只需要一直在路上。",
+                "风吹雨打之后，才能看见彩虹。",
+                "每天记十个单词，一年就是三千多。",
+                "别和同学比进度，只和自己的昨天比。",
+                "一次考试失利不代表什么，下次赢回来就行。",
+                "青春是用来拼搏的，不是用来后悔的。",
+                "把粗心当成敌人，把认真当成习惯。",
+                "你现在读的每一页书，都在为未来的你铺路。",
+                "加油，少年！你的未来有无限可能。",
+                "认真听课十分钟，胜过课后补一小时。",
+                "基础打牢了，高楼才建得稳。",
+                "少年负壮气，奋烈自有时。",
+                "只要功夫深，铁杵磨成针。",
+                "宝剑锋从磨砺出，梅花香自苦寒来。",
+                "勤能补拙是良训，一分辛苦一分才。",
+                "少壮不努力，老大徒伤悲。",
+                "黑发不知勤学早，白首方悔读书迟。",
+                "莫等闲，白了少年头，空悲切。",
+                "与其焦虑，不如行动。",
+                "关关难过关关过，前路漫漫亦灿灿。",
+                "长风破浪会有时，直挂云帆济沧海。",
+                "会当凌绝顶，一览众山小。",
+                "书山有路勤为径，学海无涯苦作舟。",
+                "温故而知新，可以为师矣。",
+                "业精于勤，荒于嬉；行成于思，毁于随。",
+                "你不需要看到整段楼梯，只需要迈出第一步。",
+                "低谷不是深渊，是大地在托住你，让你蓄力弹得更高。",
+                "别人的花期是三月的樱花，你的花期是十月的桂，不必着急，各有各的香。",
+                "不是只有第一名才值得被看见，认真活着的每一天，都该被你自己鼓掌。",
+                "累了就歇，但别逃；歇够了，就站起来继续走。",
+                "你现在的'不会'，只是在给未来的'会'腾地方。",
+                "别跟别人的高光时刻比，你还没看到他们的凌晨三点。",
+                "难过的时候，允许自己像天气一样阴一会儿，但记得，云总会散的。",
+                "你不是在'熬'日子，你是在把日子一根一根织成未来的网。",
+                "数学题做不出来没关系，但别因此觉得自己是个做不出来题的人。",
+                "有些路看起来很黑，走过去了才发现，那只是隧道，不是尽头。",
+                "你不需要变成太阳，做一颗能照亮自己桌面的台灯，就已经很了不起。",
+                "今天的'还行'，就是昨天的'不可能'。",
+                "别怕走得慢，怕的是站在原地，还骗自己说在思考方向。",
+                "你的努力可能暂时没结果，但它正在悄悄改变你这个人。",
+                "低谷时流的泪，会在高处变成你看风景时的望远镜。",
+                "不必急着和世界和解，先和自己握个手，说'辛苦了，还在坚持'。",
+                "那些让你哭的事，有一天你会笑着说出来——不是因为不痛了，是因为你变强了。",
+                "你现在觉得跨不过去的坎，回头看，不过是人生里一个稍微高一点的台阶。",
+                "没人规定花必须开在春天，你的时间，由你的土壤决定。",
+                "焦虑的反义词是具体，去做一件具体的小事，焦虑就会少一分。",
+                "你不是落后了，你是在走一条只有你能走的路。",
+                "真正的勇敢不是不害怕，是腿在抖，还是决定迈出去。",
+                "别问'为什么是我'，要问'这件事想教会我什么'。",
+                "你现在的沉默和积累，都是在给未来的某个时刻攒一声响亮的'哇'。",
+                "不必羡慕别人的掌声，你给自己鼓的掌，声音更真实。",
+                "黑夜再长，你也不是一个人在路上，月亮也在陪你。",
+                "一次跌倒不会定义你，但每一次站起来，都会重新定义你。",
+                "你不是在等待光，你本身就是正在发光的过程。"
+            ];
+
+            // 暗夜模式
+            function applyTheme(isDark) {
+                html.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                try { localStorage.setItem('focus-timer-theme', isDark ? 'dark' : 'light'); } catch (e) {}
+            }
+
+            function getSavedTheme() {
+                try {
+                    const saved = localStorage.getItem('focus-timer-theme');
+                    if (saved === 'dark') return true;
+                    if (saved === 'light') return false;
+                } catch (e) {}
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return true;
+                return false;
+            }
+
+            const isDarkMode = getSavedTheme();
+            applyTheme(isDarkMode);
+
+            themeToggle.addEventListener('click', () => {
+                const currentIsDark = html.getAttribute('data-theme') === 'dark';
+                applyTheme(!currentIsDark);
+                themeToggle.style.transform = 'scale(0.9)';
+                setTimeout(() => { themeToggle.style.transform = ''; }, 150);
+            });
+
+            // 铃声开关：切换状态并保存到 localStorage
+            function syncRingToggleUI() {
+                ringToggle.classList.toggle('on', ringEnabled);
+                ringToggle.setAttribute('aria-checked', ringEnabled ? 'true' : 'false');
+            }
+            syncRingToggleUI();
+
+            ringToggle.addEventListener('click', () => {
+                ringEnabled = !ringEnabled;
+                try { localStorage.setItem('focus-timer-ring', ringEnabled ? 'on' : 'off'); } catch (e) {}
+                syncRingToggleUI();
+                ringToggle.style.transform = 'scale(0.92)';
+                setTimeout(() => { ringToggle.style.transform = ''; }, 120);
+                // 开启时在用户手势内解锁音频并试播一声短提示（只响一下）
+                if (ringEnabled) {
+                    ensureRingAudio();
+                    setTimeout(playRingPreview, 60);
+                }
+            });
+
+            if (window.matchMedia) {
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                    try {
+                        if (!localStorage.getItem('focus-timer-theme')) applyTheme(e.matches);
+                    } catch (err) {}
+                });
+            }
+
+            // 波纹特效
+            startBtn.addEventListener('pointerdown', function(e) {
+                const rect = startBtn.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height) * 2;
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple-effect';
+                ripple.style.width = size + 'px';
+                ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                startBtn.appendChild(ripple);
+                ripple.addEventListener('animationend', () => ripple.remove());
+            });
+
+            pauseBtn.addEventListener('pointerdown', function(e) {
+                const rect = pauseBtn.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height) * 2;
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple-effect';
+                ripple.style.width = size + 'px';
+                ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                pauseBtn.appendChild(ripple);
+                ripple.addEventListener('animationend', () => ripple.remove());
+            });
+
+            // 随机鼓励语
+            function getRandomQuote() {
+                if (usedQuoteIndices.length >= quotes.length) usedQuoteIndices = [];
+                const available = [];
+                for (let i = 0; i < quotes.length; i++) {
+                    if (!usedQuoteIndices.includes(i)) available.push(i);
+                }
+                if (available.length === 0) {
+                    usedQuoteIndices = [];
+                    for (let i = 0; i < quotes.length; i++) available.push(i);
+                }
+                const randomIndex = available[Math.floor(Math.random() * available.length)];
+                usedQuoteIndices.push(randomIndex);
+                if (usedQuoteIndices.length > Math.floor(quotes.length * 0.7)) {
+                    usedQuoteIndices = usedQuoteIndices.slice(-Math.floor(quotes.length * 0.5));
+                }
+                return quotes[randomIndex];
+            }
+
+            function setMessageWithAnimation(text, specialClass = '') {
+                if (quoteChangeTimeout) clearTimeout(quoteChangeTimeout);
+                messageEl.classList.remove('fade-change', 'celebrate');
+                void messageEl.offsetWidth;
+                messageEl.textContent = text;
+                if (specialClass) {
+                    messageEl.classList.add(specialClass);
+                } else {
+                    messageEl.classList.add('fade-change');
+                }
+                quoteChangeTimeout = setTimeout(() => {
+                    messageEl.classList.remove('fade-change', 'celebrate');
+                }, 700);
+            }
+
+            function updateDisplay(seconds) {
+                const m = Math.floor(seconds / 60);
+                const s = seconds % 60;
+                const newText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                const oldText = timerDisplay.textContent;
+
+                timerDisplay.textContent = newText;
+                document.title = `${newText} - 专注中`;
+
+                if (oldText !== newText && isRunning && !isPaused) {
+                    timerDisplay.classList.remove('pulse-digit');
+                    void timerDisplay.offsetWidth;
+                    timerDisplay.classList.add('pulse-digit');
+                    setTimeout(() => timerDisplay.classList.remove('pulse-digit'), 350);
+                }
+            }
+
+            // 基于时间戳刷新
+            function refreshTimerFromEndTime() {
+                if (!isRunning || isPaused) return;
+                const now = Date.now();
+                const remainingMs = endTime - now;
+                const newRemaining = remainingMs > 0 ? Math.ceil(remainingMs / 1000) : 0;
+
+                if (newRemaining <= 0) {
+                    completeTimer();
+                    return;
+                }
+
+                const prevShown = lastDisplayedSeconds;
+                if (newRemaining !== lastDisplayedSeconds) {
+                    updateDisplay(newRemaining);
+                    lastDisplayedSeconds = newRemaining;
+                }
+                const percentage = (newRemaining / totalSeconds) * 100;
+                progressBar.style.width = `${100 - percentage}%`;
+
+                // 彩虹在后台标签页也能到点：借每秒 tick 复位整轮，避免挡住下一次整分钟
+                // （前台由 rAF 检测；此处只会流动时执行，暂停时本函数开头已提前返回）
+                // 必须先清理过期彩虹，否则下面的分钟触发会被 rainbowActive 挡掉（后台跨分钟丢失）
+                if (rainbowActive && rainbowElapsed() >= RAINBOW_TOTAL_MS) {
+                    stopRainbow();
+                }
+
+                const elapsedMinutes = Math.floor((totalSeconds - newRemaining) / 60);
+                if (elapsedMinutes > lastElapsedMinute && newRemaining > 0) {
+                    lastElapsedMinute = elapsedMinutes;
+                    const newQuote = getRandomQuote();
+                    setMessageWithAnimation(newQuote);
+                    triggerRainbow();
+                }
+
+                // 里程碑提醒：用本次刷新前的显示值判断“刚跨入”≤30s / ≤10s，
+                // 修复旧条件恒为假（lastDisplayedSeconds 刚被同步）从不触发的问题
+                if (newRemaining <= 30 && prevShown > 30) {
+                    setMessageWithAnimation('⏰ 只剩30秒了，坚持就是胜利！', 'fade-change');
+                }
+                if (newRemaining <= 10 && prevShown > 10) {
+                    setMessageWithAnimation('🔥 最后10秒！冲刺！', 'fade-change');
+                }
+            }
+
+            function spawnConfetti() {
+                const confettiColors = [
+                    '#ffb457', '#ff8c3b', '#ff6b6b', '#ffd166',
+                    '#f9a8d4', '#fda4af', '#ffb703', '#ff7e67',
+                    '#fbc02d', '#fb8c00', '#e91e63', '#ffab40'
+                ];
+                const containerRect = container.getBoundingClientRect();
+                const centerX = containerRect.width / 2;
+                const centerY = containerRect.height / 2;
+                const pieceCount = 35;
+                const fragment = document.createDocumentFragment();
+
+                for (let i = 0; i < pieceCount; i++) {
+                    const piece = document.createElement('div');
+                    piece.className = 'confetti-piece';
+                    const angle = (Math.PI * 2 * i) / pieceCount + (Math.random() - 0.5) * 0.5;
+                    const distance = 60 + Math.random() * 160;
+                    const dx = Math.cos(angle) * distance;
+                    const dy = Math.sin(angle) * distance - 30;
+                    const size = 6 + Math.random() * 10;
+                    const rotation = (Math.random() - 0.5) * 720;
+                    const color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+                    const delay = Math.random() * 0.3;
+
+                    piece.style.cssText = `
+                            left: ${centerX}px;
+                            top: ${centerY}px;
+                            width: ${size}px;
+                            height: ${size * (0.6 + Math.random() * 1.2)}px;
+                            background: ${color};
+                            border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+                            --dx: ${dx}px;
+                            --dy: ${dy}px;
+                            --rot: ${rotation}deg;
+                            animation-delay: ${delay}s;
+                        `;
+                    fragment.appendChild(piece);
+                }
+                container.appendChild(fragment);
+                setTimeout(() => {
+                    const pieces = container.querySelectorAll('.confetti-piece');
+                    pieces.forEach(p => p.remove());
+                }, 1600);
+            }
+
+            // 精确到点完成：在 endTime 时刻触发 completeTimer（前台可达毫秒级精度，
+            // 消除原“1 秒 interval 相位”造成的至多 ~1s 延迟完成）
+            function scheduleCompletion() {
+                cancelCompletion();
+                const remain = Math.max(0, endTime - Date.now());
+                completionTimeout = setTimeout(() => {
+                    completionTimeout = null;
+                    completeTimer();
+                }, remain);
+            }
+
+            function cancelCompletion() {
+                if (completionTimeout) { clearTimeout(completionTimeout); completionTimeout = null; }
+            }
+
+            // 前台逐帧显示对账：每一帧都按墙钟（Date.now）重算剩余，
+            // 保证可见时显示永远是当前精确值、不依赖 setInterval 是否被节流
+            function tickLoop() {
+                if (!isRunning || isPaused) { tickRaf = 0; return; }
+                refreshTimerFromEndTime();
+                if (!isRunning) { tickRaf = 0; return; }   // 完成/放弃后立刻停
+                tickRaf = requestAnimationFrame(tickLoop);
+            }
+
+            function completeTimer() {
+                if (!isRunning) return;   // 幂等：精确到点 / interval / rAF 谁先到谁执行
+                clearInterval(timerInterval);
+                timerInterval = null;
+                cancelCompletion();
+                if (tickRaf) { cancelAnimationFrame(tickRaf); tickRaf = 0; }
+                isRunning = false;
+                isPaused = false;
+                document.body.classList.remove('is-counting');
+                stopRainbow();
+
+                timerDisplay.textContent = '00:00';
+                timerDisplay.classList.remove('pulse-digit');
+                progressBar.style.width = '100%';
+                document.title = '🎉 完成啦！';
+
+                setMessageWithAnimation('🎉 太棒了！任务完成！休息一下吧！', 'celebrate');
+
+                // 倒计时结束，停止保活（到点播放铃声后不再需要保持后台音频）
+                stopRingKeepAlive();
+
+                // 到点播放铃声（如果开启）
+                playRingtone();
+
+                startBtn.textContent = '再来一次';
+                startBtn.classList.remove('btn-running');
+                minutesInput.disabled = false;
+                pauseBtn.style.display = 'none';
+                pauseBtn.textContent = '暂停';
+                pauseBtn.classList.remove('btn-paused');
+
+                spawnConfetti();
+
+                setTimeout(() => {
+                    if (!isRunning && messageEl.textContent.includes('太棒了')) {
+                        messageEl.classList.remove('celebrate');
+                    }
+                }, 3500);
+            }
+
+            function resetUI() {
+                isRunning = false;
+                isPaused = false;
+                cancelCompletion();
+                if (tickRaf) { cancelAnimationFrame(tickRaf); tickRaf = 0; }
+                ringPendingOnVisible = false;
+                stopRingKeepAlive();
+                document.body.classList.remove('is-counting');
+                stopRainbow();
+                remainingMsOnPause = 0;
+                lastElapsedMinute = -1;
+                lastDisplayedSeconds = -1;
+                if (quoteChangeTimeout) clearTimeout(quoteChangeTimeout);
+                timerDisplay.textContent = '00:00';
+                timerDisplay.classList.remove('pulse-digit');
+                progressBar.style.width = '0%';
+                document.title = '🌞 学习专注倒计时';
+                messageEl.classList.remove('fade-change', 'celebrate');
+                messageEl.textContent = '🌞 元气满满的一天，准备好开始了吗？';
+                startBtn.textContent = '开始';
+                startBtn.classList.remove('btn-running');
+                minutesInput.disabled = false;
+                pauseBtn.style.display = 'none';
+                pauseBtn.textContent = '暂停';
+                pauseBtn.classList.remove('btn-paused');
+            }
+
+            // 暂停/继续切换
+            window.togglePause = function() {
+                if (!isRunning) return;
+
+                if (!isPaused) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    cancelCompletion();
+                    if (tickRaf) { cancelAnimationFrame(tickRaf); tickRaf = 0; }
+                    remainingMsOnPause = Math.max(0, endTime - Date.now());
+                    isPaused = true;
+                    pauseRainbow();
+                    pauseBtn.textContent = '继续';
+                    pauseBtn.classList.add('btn-paused');
+                    const m = Math.floor(remainingMsOnPause / 60000);
+                    const s = Math.ceil(remainingMsOnPause / 1000) % 60;
+                    document.title = `⏸️ ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')} - 已暂停`;
+                } else {
+                    if (remainingMsOnPause <= 0) {
+                        completeTimer();
+                        return;
+                    }
+                    endTime = Date.now() + remainingMsOnPause;
+                    isPaused = false;
+                    resumeRainbow();
+                    pauseBtn.textContent = '暂停';
+                    pauseBtn.classList.remove('btn-paused');
+                    lastDisplayedSeconds = Math.ceil(remainingMsOnPause / 1000);
+                    updateDisplay(lastDisplayedSeconds);
+                    document.title = `${timerDisplay.textContent} - 专注中`;
+                    // 恢复精确到点完成 + 前台逐帧对账
+                    scheduleCompletion();
+                    if (tickRaf) cancelAnimationFrame(tickRaf);
+                    tickRaf = requestAnimationFrame(tickLoop);
+                    timerInterval = setInterval(refreshTimerFromEndTime, 1000);
+                    refreshTimerFromEndTime();
+                }
+            };
+
+            // —— 放弃确认弹窗 ——
+            const giveUpTips = [
+                '再坚持一下，胜利就在前方！',
+                '半途而废会让之前的努力全部白费，真的想好了吗？',
+                '放弃很容易，但坚持一定很酷！',
+                '你已经坚持这么久了，再撑一会就成功了！',
+                '成功的路上并不拥挤，因为坚持的人不多！',
+                '再想想，也许下一秒就会有突破！',
+                '疲惫时可以暂停休息，但不要轻易说放弃！',
+                '你的目标就在不远处，别让它溜走！',
+                '此刻的坚持，正在塑造更强大的你！',
+                '咬咬牙，你已经比大多数人都更优秀了！'
+            ];
+
+            function closeModal(overlay) {
+                overlay.classList.add('closing');
+                setTimeout(function() { overlay.remove(); }, 160);
+            }
+
+            function openModal(opts) {
+                const overlay = document.createElement('div');
+                overlay.className = 'modal-overlay';
+                overlay.setAttribute('role', 'dialog');
+                overlay.setAttribute('aria-modal', 'true');
+
+                const box = document.createElement('div');
+                box.className = 'modal-box';
+
+                const title = document.createElement('div');
+                title.className = 'modal-title';
+                title.textContent = opts.title || '提示';
+
+                const msg = document.createElement('div');
+                msg.className = 'modal-message';
+                msg.innerHTML = opts.message || '';
+
+                const actions = document.createElement('div');
+                actions.className = 'modal-actions';
+                (opts.buttons || []).forEach(function(b) {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'modal-btn ' + (b.className || 'modal-btn-ghost');
+                    btn.textContent = b.text;
+                    btn.addEventListener('click', function() {
+                        closeModal(overlay);
+                        if (typeof b.action === 'function') b.action();
+                    });
+                    actions.appendChild(btn);
+                });
+
+                box.appendChild(title);
+                box.appendChild(msg);
+                box.appendChild(actions);
+                overlay.appendChild(box);
+                document.body.appendChild(overlay);
+
+                const firstBtn = actions.querySelector('button');
+                if (firstBtn) firstBtn.focus();
+
+                overlay.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        closeModal(overlay);
+                    }
+                });
+                return overlay;
+            }
+
+            function confirmGiveUp(action) {
+                openModal({
+                    title: '💪 确定要放弃吗？',
+                    message: '本次专注已经进行了一段时间，<br>确定要放弃吗？',
+                    buttons: [
+                        { text: '继续专注', className: 'modal-btn-primary', action: null },
+                        { text: '确定放弃', className: 'modal-btn-danger', action: function() {
+                                const tip = giveUpTips[Math.floor(Math.random() * giveUpTips.length)];
+                                openModal({
+                                    title: '🤔 最后一次确认',
+                                    message: '“' + tip + '”<br><br>放弃后本次进度将清零，确定要放弃吗？',
+                                    buttons: [
+                                        { text: '再坚持一下', className: 'modal-btn-primary', action: null },
+                                        { text: '确定放弃', className: 'modal-btn-danger', action: action }
+                                    ]
+                                });
+                            } }
+                    ]
+                });
+            }
+
+            // 开始/放弃计时
+            window.startTimer = function() {
+                // 用户手势内解锁音频上下文，保证倒计时结束铃声可正常播放
+                ensureRingAudio();
+
+                if (isRunning) {
+                    confirmGiveUp(function() {
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                        resetUI();
+                        container.style.transform = 'scale(0.97)';
+                        setTimeout(() => { container.style.transform = ''; }, 200);
+                    });
+                    return;
+                }
+
+                const inputMinutes = parseInt(minutesInput.value);
+                if (isNaN(inputMinutes) || inputMinutes < 1) {
+                    minutesInput.style.borderColor = '#ef4444';
+                    minutesInput.style.boxShadow = '0 0 0 4px rgba(239,68,68,0.2)';
+                    minutesInput.focus();
+                    setTimeout(() => {
+                        minutesInput.style.borderColor = '';
+                        minutesInput.style.boxShadow = '';
+                    }, 600);
+                    container.style.animation = 'shake 0.5s ease';
+                    setTimeout(() => { container.style.animation = ''; }, 500);
+                    return;
+                }
+
+                const effectiveMinutes = Math.min(inputMinutes, 180);
+                if (inputMinutes > 180) minutesInput.value = '180';
+
+                totalSeconds = effectiveMinutes * 60;
+                endTime = Date.now() + totalSeconds * 1000;
+                isRunning = true;
+                isPaused = false;
+                document.body.classList.add('is-counting');
+                remainingMsOnPause = 0;
+                lastElapsedMinute = 0;
+                lastDisplayedSeconds = totalSeconds;
+                usedQuoteIndices = [];
+                // 保持 AudioContext 在后台不挂起，保证到点铃声能按计划响起（或回前台补播）
+                startRingKeepAlive();
+
+                startBtn.textContent = '放弃';
+                startBtn.classList.add('btn-running');
+                minutesInput.disabled = true;
+
+                pauseBtn.style.display = 'inline-block';
+                pauseBtn.textContent = '暂停';
+                pauseBtn.classList.remove('btn-paused');
+
+                const firstQuote = getRandomQuote();
+                setMessageWithAnimation(firstQuote);
+                updateDisplay(totalSeconds);
+                progressBar.style.width = '0%';
+
+                if (timerInterval) clearInterval(timerInterval);
+                // 精确到点完成 + 前台逐帧对账
+                scheduleCompletion();
+                if (tickRaf) cancelAnimationFrame(tickRaf);
+                tickRaf = requestAnimationFrame(tickLoop);
+                timerInterval = setInterval(refreshTimerFromEndTime, 1000);
+                refreshTimerFromEndTime();
+            };
+
+            // 回到前台统一对账：恢复音频、补播延迟铃声、重建保活、按时间戳校准倒计时/彩虹
+            function onReturnToForeground() {
+                // 恢复被浏览器挂起的音频上下文（Edge / 鸿蒙6 后台标签页会暂停音频）
+                resumeRingAudioIfNeeded();
+                // 倒计时结束但铃声因后台被挂起未播放，回到前台时补播
+                if (ringPendingOnVisible) {
+                    ringPendingOnVisible = false;
+                    setTimeout(playRingtone, 150);
+                }
+                // 倒计时仍在流动时重建保活循环（若被浏览器打断），保持后台到点能响铃
+                if (isRunning && !isPaused) startRingKeepAlive();
+                // 时间戳校准：倒计时/彩虹/进度条立即对齐到真实剩余时间
+                if (!isRunning || isPaused) return;
+                refreshTimerFromEndTime();
+            }
+
+            // 页面回到前台（可见性 / 回焦 / bfcache 恢复 / 冻结解冻 任一方式）
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') onReturnToForeground();
+            });
+            window.addEventListener('focus', onReturnToForeground);
+            window.addEventListener('pageshow', onReturnToForeground);
+            document.addEventListener('resume', onReturnToForeground);
+
+            // 抖动动画
+            const shakeStyle = document.createElement('style');
+            shakeStyle.textContent = `
+                    @keyframes shake {
+                        0%, 100% { transform: translateX(0); }
+                        15% { transform: translateX(-6px); }
+                        30% { transform: translateX(6px); }
+                        45% { transform: translateX(-5px); }
+                        60% { transform: translateX(4px); }
+                        75% { transform: translateX(-2px); }
+                        90% { transform: translateX(1px); }
+                    }
+                `;
+            document.head.appendChild(shakeStyle);
+
+            // 生成星空
+            function buildNightStars() {
+                const starsEl = document.getElementById('stars');
+                if (!starsEl) return;
+                const fragment = document.createDocumentFragment();
+                const count = 90;
+                for (let i = 0; i < count; i++) {
+                    const star = document.createElement('span');
+                    star.className = 'star';
+                    const size = (Math.random() * 2.2 + 0.8).toFixed(1);
+                    star.style.cssText = `
+                            left: ${(Math.random() * 100).toFixed(2)}%;
+                            top: ${(Math.random() * 100).toFixed(2)}%;
+                            width: ${size}px;
+                            height: ${size}px;
+                            animation-delay: ${(Math.random() * 4).toFixed(2)}s;
+                            animation-duration: ${(2 + Math.random() * 3).toFixed(2)}s;
+                        `;
+                    fragment.appendChild(star);
+                }
+                starsEl.appendChild(fragment);
+            }
+            buildNightStars();
+
+            function repositionShootingStars() {
+                const stars = document.querySelectorAll('.shooting-star');
+                if (!stars.length) return;
+                const vw = window.innerWidth;
+                const vh = window.innerHeight;
+                if (!vw || !vh) return;
+
+                const isSmall = Math.min(vw, vh) <= 600;
+                const METEOR_SPEED = 850;
+                const DURATIONS = [5, 8, 11];
+                const BASE_ANGLES = [30, 45, 60, 120, 135, 150];
+
+                const angles = BASE_ANGLES.slice();
+                for (let i = angles.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    const tmp = angles[i];
+                    angles[i] = angles[j];
+                    angles[j] = tmp;
+                }
+
+                stars.forEach(function(star, idx) {
+                    try {
+                        const duration = DURATIONS[idx % DURATIONS.length] || 5;
+                        star.style.animationDuration = duration + 's';
+
+                        const len = isSmall ? 46 : 150;
+                        const margin = isSmall ? 30 : 60;
+
+                        const angleDeg = angles[idx % angles.length];
+                        const rad = angleDeg * Math.PI / 180;
+                        const dx = Math.cos(rad);
+                        const dy = Math.sin(rad);
+
+                        const rotDeg = Math.atan2(-dy, -dx) * 180 / Math.PI;
+
+                        let sx;
+                        if (dx > 0) {
+                            sx = vw * (0.03 + Math.random() * 0.35);
+                        } else {
+                            sx = vw * (0.55 + Math.random() * 0.42);
+                        }
+                        const sy = -(len + vh * (0.08 + Math.random() * 0.2));
+
+                        const distX = dx > 0
+                            ? (vw - sx + margin) / dx
+                            : (sx + margin) / Math.abs(dx);
+                        const distY = (vh - sy + margin) / dy;
+                        const exit = Math.max(distX, distY);
+                        const travel = Math.max(METEOR_SPEED * duration, exit);
+
+                        star.style.setProperty('--angle', rotDeg.toFixed(2) + 'deg');
+                        star.style.setProperty('--travel-x', (dx * travel).toFixed(1) + 'px');
+                        star.style.setProperty('--travel-y', (dy * travel).toFixed(1) + 'px');
+                        star.style.setProperty('--meteor-len', len + 'px');
+                        star.style.left = ((sx / vw) * 100).toFixed(2) + '%';
+                        star.style.top = ((sy / vh) * 100).toFixed(2) + '%';
+                    } catch (err) {
+                        const d = DURATIONS[idx % DURATIONS.length] || 5;
+                        star.style.animationDuration = d + 's';
+                        star.style.setProperty('--angle', '-45deg');
+                        star.style.setProperty('--travel-x', (METEOR_SPEED * d * -0.7071).toFixed(1) + 'px');
+                        star.style.setProperty('--travel-y', (METEOR_SPEED * d * 0.7071).toFixed(1) + 'px');
+                        star.style.setProperty('--meteor-len', (isSmall ? 46 : 150) + 'px');
+                    }
+                });
+            }
+
+            repositionShootingStars();
+            window.addEventListener('resize', repositionShootingStars);
+
+            // —— 白天模式彩虹特效：每满一分钟划出一道彩虹 ——
+            // 计时用「墙钟时间 − 累计暂停时长」推算（与倒计时同一套时间戳模型）：
+            // 只要倒计时在流动（含浏览器后台），彩虹进度就跟着墙钟走；
+            // 只有显式「暂停」才冻结动画与内置计时；放弃 / 结束时整轮复位隐藏。
+            const RAINBOW_DRAW_MS = 5000;     // 划出 / 反向收回 各 5s
+            const RAINBOW_HOLD_MS = 10000;    // 完整显示 10s
+            const RAINBOW_TOTAL_MS = RAINBOW_DRAW_MS * 2 + RAINBOW_HOLD_MS; // 共 20s
+            // rainbowActive 在顶部状态区声明：是否处于一轮彩虹周期内
+            let rainbowCycleStart = 0;         // 本轮彩虹的「活动」起算时间戳（暂停不计入）
+            let rainbowPausedMs = 0;           // 本轮累计暂停时长（ms）
+            let rainbowPauseAt = 0;            // 最近一次暂停开始的时间戳（0 表示未在暂停）
+            let rainbowRaf = 0;
+
+            function updateRainbowGeometry() {
+                if (!rainbowArc) return;
+                const vw = window.innerWidth;
+                const vh = window.innerHeight;
+                if (!vw || !vh) return;
+                const apexH = vh * 0.66;      // 彩虹弧顶高度 = 视口高度的 2/3
+                const fOut = 0.57;            // 最外侧（红色）色带半径占比，色带沿弧向等宽
+                // 圆心放在屏幕底部之下，形成真正的弧形：
+                // 弧顶在 apexH 处，最外侧色带在屏幕底部恰好横跨全宽
+                const R = ((vw / 2) * (vw / 2) + apexH * apexH) / (2 * apexH * fOut);
+                const cy = (vh - apexH) + fOut * R;      // 圆心距视口顶部的距离
+                const elementBottom = cy + R;            // 元素底边距视口顶部的距离
+                rainbowArc.style.setProperty('--rainbow-r', R + 'px');
+                rainbowArc.style.width = (R * 2) + 'px';
+                rainbowArc.style.height = (R * 2) + 'px';
+                rainbowArc.style.bottom = (vh - elementBottom) + 'px';
+            }
+
+            // 当前流动时长 = 墙钟经过时间 − 累计暂停时长；
+            // 暂停期间以暂停时刻为基准，内置计时真正停住、不再随墙钟增长
+            function rainbowElapsed() {
+                const base = rainbowPauseAt ? rainbowPauseAt : Date.now();
+                return Math.max(0, base - rainbowCycleStart - rainbowPausedMs);
+            }
+
+            // 根据流动时长计算当前动画进度，并应用到 clip-path；返回流动时长
+            function applyRainbowProgress() {
+                const t = rainbowElapsed();
+                let p;
+                if (t < RAINBOW_DRAW_MS) {
+                    p = t / RAINBOW_DRAW_MS;
+                } else if (t < RAINBOW_DRAW_MS + RAINBOW_HOLD_MS) {
+                    p = 1;
+                } else if (t < RAINBOW_TOTAL_MS) {
+                    p = 1 - (t - RAINBOW_DRAW_MS - RAINBOW_HOLD_MS) / RAINBOW_DRAW_MS;
+                } else {
+                    p = 0;
+                }
+                rainbowArc.style.clipPath = 'inset(0 ' + ((1 - p) * 100).toFixed(2) + '% 0 0)';
+                return t;
+            }
+
+            // 前台逐帧渲染：进度始终按墙钟推算，后台回来自动跳到正确位置
+            function rainbowStep() {
+                if (!rainbowActive) return;
+                if (rainbowElapsed() >= RAINBOW_TOTAL_MS) {
+                    stopRainbow();   // 整轮结束：复位隐藏，等待下一次整分钟
+                    return;
+                }
+                applyRainbowProgress();
+                rainbowRaf = requestAnimationFrame(rainbowStep);
+            }
+
+            // 放弃 / 完成 / 重置：彩虹直接消失并清零进度
+            function stopRainbow() {
+                if (rainbowRaf) { cancelAnimationFrame(rainbowRaf); rainbowRaf = 0; }
+                rainbowActive = false;
+                rainbowPausedMs = 0;
+                rainbowPauseAt = 0;
+                if (rainbowDecor) rainbowDecor.classList.remove('visible');
+                if (rainbowArc) rainbowArc.style.clipPath = 'inset(0 100% 0 0)';
+            }
+
+            // 暂停：记下暂停起点并取消动画循环，clip-path 冻结在当前状态（内置计时不再走）
+            function pauseRainbow() {
+                if (!rainbowActive) return;
+                if (rainbowPauseAt) return;    // 已在暂停，幂等
+                rainbowPauseAt = Date.now();
+                if (rainbowRaf) { cancelAnimationFrame(rainbowRaf); rainbowRaf = 0; }
+            }
+
+            // 恢复：把暂停时长计入累计暂停，从冻结处继续走动画与内置计时
+            function resumeRainbow() {
+                if (!rainbowActive) return;
+                if (rainbowPauseAt) {
+                    rainbowPausedMs += Date.now() - rainbowPauseAt;
+                    rainbowPauseAt = 0;
+                }
+                if (rainbowRaf) cancelAnimationFrame(rainbowRaf);
+                rainbowRaf = requestAnimationFrame(rainbowStep);
+            }
+
+            function triggerRainbow() {
+                if (!rainbowDecor || !rainbowArc) return;
+                if (!isRunning || isPaused) return;
+                if (rainbowActive) return;
+
+                rainbowActive = true;
+                rainbowCycleStart = Date.now();
+                rainbowPausedMs = 0;
+                rainbowPauseAt = 0;
+                rainbowDecor.classList.add('visible');
+                applyRainbowProgress();
+
+                if (rainbowRaf) cancelAnimationFrame(rainbowRaf);
+                rainbowRaf = requestAnimationFrame(rainbowStep);
+            }
+
+            updateRainbowGeometry();
+            window.addEventListener('resize', updateRainbowGeometry);
+
+            // —— 背景装饰点击 Q 弹动画（倒计时中禁用） ——
+            const decorClickables = document.querySelectorAll('.decor-clickable');
+            decorClickables.forEach(function(el) {
+                el.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    if (isRunning) return;
+                    el.classList.remove('decor-boing');
+                    void el.offsetWidth;
+                    el.classList.add('decor-boing');
+                });
+                el.addEventListener('animationend', function() {
+                    el.classList.remove('decor-boing');
+                });
+            });
+
+            // 键盘快捷键
+            document.addEventListener('keydown', function(e) {
+                if (document.querySelector('.modal-overlay')) return;
+                if (e.key === ' ' && e.target === document.body) {
+                    e.preventDefault();
+                    startTimer();
+                }
+                if (e.key === 'Escape' && isRunning) {
+                    e.preventDefault();
+                    startTimer();
+                }
+                if ((e.key === 'p' || e.key === 'P') && isRunning && e.target === document.body) {
+                    e.preventDefault();
+                    togglePause();
+                }
+            });
+
+            console.log('✅ 学习专注倒计时已就绪 (基于时间戳，后台不掉线)');
+            console.log('   💡 提示：按空格键快速开始/放弃，按 P 键暂停/继续');
+            console.log('   🌓 点击右上角切换暗夜模式');
+            console.log(`   📝 已加载 ${quotes.length} 条鼓励语`);
+            console.log('   🌈 白天模式：每满一分钟划出一道彩虹（5s 划出 + 10s 显示 + 5s 反向收回）');
+            console.log('   🚀 流星速度 850px/s，共 3 条，方向从预设斜角随机选取（左斜/右斜多向）');
+            console.log('   🔔 到点铃声已就绪（Web Audio 合成，无需音频文件）—— 右上角苹果风格开关可开启/关闭，当前：' + (ringEnabled ? '开启' : '关闭'));
+        })();
+    </script>
+</body>
+</html>
